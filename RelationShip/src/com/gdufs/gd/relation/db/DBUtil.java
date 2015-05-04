@@ -46,7 +46,6 @@ public class DBUtil {
 			cpds.setDriverClass(p.getProperty(datasourcename + ".driverClass")
 					.trim());
 		} catch (PropertyVetoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		cpds.setJdbcUrl(p.getProperty(datasourcename + ".url").trim());

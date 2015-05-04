@@ -22,58 +22,64 @@ public class CalTask implements Runnable {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		Connection connection = pool.getConnection();
 		ArrayList<TextPair<String, String>> contacts = null;
-		System.out.println("¿ªÊ¼¸üĞÂ¶ş¶ÈÈËÂö¹ØÏµ...");
+		System.out.println("å¼€å§‹æ›´æ–°äºŒåº¦äººè„‰å…³ç³»...");
 		if (connection != null) {
 			try {
 				contacts = RelationDaol.getAllContact(connection);
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				System.out.println("»ñÈ¡Contact Ê§°Ü");
+				System.out.println("è·å–Contact å¤±è´¥");
 			}
 			try {
 				// calculate relation
-				System.out.println("relation ¼ÆËãËùÓĞ¹ØÏµÖĞ....");
+				System.out.println("relation è®¡ç®—æ‰€æœ‰å…³ç³»ä¸­....");
 				Set<Degree2Friend> newList = RelationCalculator.cal(contacts);
-
-				System.out.println("relation ĞÂ¾É¹ØÏµ±È½Ï¿ªÊ¼...");
+				System.out.println("è®¡ç®—ç»“æœï¼š"+newList);
+				System.out.println("relation æ–°æ—§å…³ç³»æ¯”è¾ƒå¼€å§‹...");
 				// get old relation
 				Set<Degree2Friend> oldList = RelationDaol
 						.getAllSecondRelation(connection);
+				System.out.println("relation æ¯”è¾ƒå‰");
+				System.out.println("oldList:---->"+oldList);
+				System.out.println("newList:---->"+oldList);
+				
 				// compare relation
 				RelationDaol.compare(oldList, newList);
-				System.out.println("relation ±È½Ï½áÊø");
+				System.out.println("relation æ¯”è¾ƒç»“æŸ");
 
+				System.out.println("oldList:---->"+oldList);
+				System.out.println("newList:---->"+oldList);
+				
 				// restore Relation
 				if (!oldList.isEmpty()) {
-					System.out.println("relation É¾³ı¾ÉµÄ¹ØÏµ"
+					System.out.println("relation åˆ é™¤æ—§çš„å…³ç³»"
 							+ RelationDaol.batchDel(connection, oldList));
 				}
 				if (!newList.isEmpty()) {
 					RelationDaol.batchInsert(connection, newList);
-					System.out.println("relation Ìí¼ÓĞÂµÄ¹ØÏµ"
+					System.out.println("relation æ·»åŠ æ–°çš„å…³ç³»"
 							+ RelationDaol.batchDel(connection, oldList));
 				}
-				// ÇåÀí£¬ÎªÏÂ´Î×ö×¼±¸
+				// æ¸…ç†ï¼Œä¸ºä¸‹æ¬¡åšå‡†å¤‡
 				contacts.clear();
 				oldList.clear();
 				newList.clear();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-				System.out.println("Exception ·¢Éú");
+				System.out.println("Exception å‘ç”Ÿ");
 			} finally {
 				try {
 					connection.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			}
 
 		}
-		System.out.println("relation ¸üĞÂ½áÊø");
-		System.out.println("ÏûºÄÊ±¼ä" + (System.currentTimeMillis() - time));
+		System.out.println("relation æ›´æ–°ç»“æŸ");
+		System.out.println("æ¶ˆè€—æ—¶é—´" + (System.currentTimeMillis() - time));
 	}
 }

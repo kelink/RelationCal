@@ -3,11 +3,7 @@ package com.gdufs.gd.relation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
-
 import com.gdufs.gd.relation.model.Degree2Friend;
 import com.gdufs.gd.relation.model.Rela;
 import com.gdufs.gd.relation.model.TextPair;
@@ -17,9 +13,9 @@ public class RelationCalculator {
 			ArrayList<TextPair<String, String>> contacts) {
 		Set<Degree2Friend> degree2Friends = new HashSet<Degree2Friend>();
 		HashMap<String, Rela> relasList = new HashMap<String, Rela>();
-
-		for (TextPair<String, String> item : contacts) {
-			// ÅĞ¶ÏÊÇ·ñ´æÔÚ£¬²»´æÔÚ´´½¨
+		System.out.println(contacts);
+		for (TextPair<String, String> item : contacts) {		
+			// åˆ¤æ–­æ˜¯å¦å­˜åœ¨ï¼Œä¸å­˜åœ¨åˆ›å»º
 			if (!relasList.containsKey(item.getKey())) {
 				Rela rela = new Rela();
 				relasList.put(item.getKey(), rela);
@@ -28,22 +24,29 @@ public class RelationCalculator {
 				Rela rela = new Rela();
 				relasList.put(item.getValue(), rela);
 			}
-			// ´æÔÚµÄÊ±ºò
+			// å­˜åœ¨çš„æ—¶å€™
 			relasList.get(item.getKey()).getFollowers().add(item.getValue());
 			relasList.get(item.getValue()).getBeFollowers().add(item.getKey());
 		}
-		// »ñÈ¡¶ş¶ÈÈËÂöºÍÖĞ¼äÈË
+		System.out.println("å…³æ³¨è€…å’Œè¢«å…³æ³¨è€…åˆ—è¡¨ï¼š"+relasList.toString());
+		// è·å–äºŒåº¦äººè„‰å’Œä¸­é—´äºº
 		for (String middle : relasList.keySet()) {
+			System.out.println(middle);
 			Rela rela = relasList.get(middle);
 			for (String hostNum : rela.getBeFollowers()) {
 				for (String degree2Num : rela.getFollowers()) {
-					// È¥µô×ÔÉí
-					if (!hostNum.equals(degree2Num)) {
-						degree2Friends.add(new Degree2Friend(hostNum,
-								degree2Num, middle));
-						System.out.println(hostNum + "ºÍ" + degree2Num + ",ÖĞ¼äÈË"
-								+ middle);
+					//å»æ‰æœ¬æ¥contactå°±æœ‰çš„
+					TextPair<String, String> tempPair=new TextPair<String, String>(hostNum,degree2Num);
+					if (!contacts.contains(tempPair)) {
+						// å»æ‰è‡ªèº«(delete)
+						if (!hostNum.equals(degree2Num)) {
+							degree2Friends.add(new Degree2Friend(hostNum,
+									degree2Num, middle));
+							System.out.println(hostNum + "å’Œ" + degree2Num + ",ä¸­é—´äºº"
+									+ middle);
+						}
 					}
+					
 				}
 			}
 		}

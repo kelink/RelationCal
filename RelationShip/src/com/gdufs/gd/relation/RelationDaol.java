@@ -13,7 +13,7 @@ import com.gdufs.gd.relation.model.Degree2Friend;
 import com.gdufs.gd.relation.model.TextPair;
 
 /**
- * »ñÈ¡ËùÓĞµÄContact¼ÇÂ¼
+ * å…³ç³»æŸ¥æ‰¾
  * 
  * @author Administrator
  *
@@ -21,14 +21,12 @@ import com.gdufs.gd.relation.model.TextPair;
 public class RelationDaol {
 	public static ArrayList<TextPair<String, String>> getAllContact(
 			Connection conn) throws SQLException {
-		String sqlString = "select hostNum,friendNum from YContact";
-		// Á÷Ê½¶ÁÈ¡mysqlÊı¾İ¼¯
+		String sqlString = "select hostNum,friendNum from YContact where isSysUser=1";
 		PreparedStatement ps = conn.prepareStatement(sqlString,
 				ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 		ps.setFetchSize(Integer.MIN_VALUE);
 		ResultSet resultSet = ps.executeQuery();
 		ArrayList<TextPair<String, String>> result = new ArrayList<TextPair<String, String>>();
-		int i = 0;
 		while (resultSet.next()) {
 			String hostNum = resultSet.getString("hostNum");
 			String friendNum = resultSet.getString("friendNum");
@@ -37,13 +35,11 @@ public class RelationDaol {
 						hostNum, friendNum);
 				result.add(textPair);
 			}
-			++i;
 		}
 		return result;
 	}
 
-	// ²éÑ¯¹ØÏµ±í£¬ÅĞ¶ÏÊÇ·ñÔö¼Ó£¬É¾³ı»¹ÊÇ¸üĞÂ
-
+	//è·å–æ‰€æœ‰çš„äºŒåº¦äººè„‰å…³ç³»
 	public static Set<Degree2Friend> getAllSecondRelation(Connection conn)
 			throws SQLException {
 		Set<Degree2Friend> result = new HashSet<Degree2Friend>();
@@ -61,22 +57,22 @@ public class RelationDaol {
 		return result;
 	}
 
-	// ±È½Ï
+	//æ¯”è¾ƒ
 	public static void compare(Set<Degree2Friend> oldList,
 			Set<Degree2Friend> newList) {
 		Set<Degree2Friend> temp = new HashSet<Degree2Friend>();
 		for (Degree2Friend newItem : newList) {
-			// ĞÂÌí¼ÓµÄitem
+			// ï¿½ï¿½ï¿½ï¿½Óµï¿½item
 			if (oldList.contains(newItem)) {
 				temp.add(newItem);
 			}
 		}
-		oldList.removeAll(temp);// ´æÔÚÔòÒÆÈ¥£¬Ê£ÏÂµÄ¾ÍÊÇÒª¾É±íÉ¾³ıµÄ
-		newList.removeAll(temp);// ´æÔÚÔòÒÆÈ¥£¬Ê£ÏÂµÄ¾ÍÊÇÒªĞÂ±íÒª¸üĞÂµÄ
+		oldList.removeAll(temp);// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½Ê£ï¿½ÂµÄ¾ï¿½ï¿½ï¿½Òªï¿½É±ï¿½É¾ï¿½ï¿½ï¿½
+		newList.removeAll(temp);// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½Ê£ï¿½ÂµÄ¾ï¿½ï¿½ï¿½Òªï¿½Â±ï¿½Òªï¿½ï¿½ï¿½Âµï¿½
 		temp = null;
 	}
 
-	// ÅúÁ¿É¾³ı
+	// æ‰¹é‡åˆ é™¤
 	public static boolean batchDel(Connection conn, Set<Degree2Friend> oldList) {
 		String sql = "delete From yrelationsecond where hostNum=? and friendNum=? and middle=?";
 		PreparedStatement pstmt = null;
@@ -88,17 +84,16 @@ public class RelationDaol {
 				pstmt.setString(1, item.getHostNum());
 				pstmt.setString(2, item.getDegree2Num());
 				pstmt.setString(3, item.getMiddle());
-				pstmt.addBatch(); // ÅúÁ¿Ö´ĞĞ
+				pstmt.addBatch(); 
 			}
-			// Ö´ĞĞÅúÁ¿¸üĞÂ
 			pstmt.executeBatch();
-			conn.commit();// Ìá½»ÊÂÎñ
-			System.out.println("É¾³ıÊı¾İ±í³É¹¦");
+			conn.commit();
+			System.out.println("batchDel scuuess");
 			flag = true;
 		} catch (SQLException e) {
 			try {
 				e.printStackTrace();
-				conn.rollback(); // ½øĞĞÊÂÎñ»Ø¹ö
+				conn.rollback(); 
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
@@ -106,7 +101,7 @@ public class RelationDaol {
 		return flag;
 	}
 
-	// ÅúÁ¿²åÈë
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	public static boolean batchInsert(Connection conn, Set<Degree2Friend> list) {
 		String sql = "INSERT INTO yrelationsecond (hostNum, friendNum, middle) VALUES (?,?,?);";
 		PreparedStatement pstmt = null;
@@ -120,10 +115,10 @@ public class RelationDaol {
 				pstmt.setString(3, degree2Friend.getMiddle());
 				pstmt.addBatch();
 			}
-			// Ö´ĞĞÅúÁ¿¸üĞÂ
+			// Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			pstmt.executeBatch();
 			conn.commit();
-			System.out.println("²åÈëÊı¾İ±í³É¹¦");
+			System.out.println("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ±ï¿½É¹ï¿½");
 			flag = true;
 		} catch (SQLException e) {
 			e.printStackTrace();
